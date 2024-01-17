@@ -9,6 +9,8 @@ Tech stack: SvelteKit, Cloudflare Workers, Supabase (PostgreSQL)
 
 - SvelteKit 2
 
+### Supabase Setup
+
 ### Installation
 
 Run `npm install` in the root directory to install all dependencies.
