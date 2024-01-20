@@ -2,7 +2,7 @@ export interface Sequence {
 	id: string;
 	name: string;
 	description: string;
-	createdAd: string; // TODO: use Date instead
-	updatedAt: string;
-	sequencePath: string;
+	created_at: string; // TODO: use Date instead
+	updated_at: string;
+	sequence_path: string;
 }

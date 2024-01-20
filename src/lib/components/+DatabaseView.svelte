@@ -12,11 +12,12 @@
   }
 
   async function getSequences() {
-    const sequencesResponse = await fetch("/api/sequences/all");
+    const sequencesResponse = await fetch("/api/sequences");
     if (!sequencesResponse.ok) {
       return;
     }
-    sequences = await sequencesResponse.json();
+    sequences = await sequencesResponse.json() as Sequence[];
+		console.log(sequences)
   }
 </script>
 
@@ -36,7 +37,7 @@
         <tr>
           <td>{sequence.name}</td>
           <td>{sequence.description}</td>
-          <td>{sequence.sequencePath}</td>
+          <td>{sequence.sequence_path}</td>
         </tr>
       {/each}
     </tbody>
