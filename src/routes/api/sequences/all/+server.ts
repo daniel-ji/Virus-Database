@@ -1,4 +1,4 @@
-import { supabase } from "$lib/supabase-client.server";
+import { supabase } from "$lib/supabaseClient.server";
 import { response } from "$lib/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
