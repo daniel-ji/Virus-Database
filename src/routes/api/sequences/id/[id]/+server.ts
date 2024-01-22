@@ -1,5 +1,5 @@
 import { supabase } from '$lib/services/supabaseClient.server';
-import { responseJSON } from '$lib/utils';
+import { responseJSON } from '$lib/utils/utils';
 import type { Sequence } from '$lib/types/sequences.interface';
 
 export async function GET({ params }: { params: { id: string } }) {

@@ -1,6 +1,6 @@
 <script>
-  import DatabaseUpload from "$lib/components/+DatabaseUpload.svelte";
-  import DatabaseView from "$lib/components/+DatabaseView.svelte";
+import DatabaseUpload from "$lib/components/DatabaseUpload.svelte";
+import DatabaseView from "$lib/components/DatabaseView.svelte";
 </script>
 
 <div id="landing-page" class="mb-5">
@@ -11,9 +11,9 @@
 </div>
 
 <style>
-  #landing-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+#landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>

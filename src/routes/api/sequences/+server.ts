@@ -1,5 +1,5 @@
 import { supabase } from "$lib/services/supabaseClient.server";
-import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT, responseJSON } from "$lib/utils";
+import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT, responseJSON } from "$lib/utils/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 export async function GET() {
@@ -50,6 +50,8 @@ export async function POST({ request }: { request: Request }) {
 	const { data: insertData, error: insertError } = await supabase.from("sequences").insert({ name, description, filename: sequence.name, filepath: uploadData.path })
 
 	if (insertError) {
+		// delete file if insert fails
+		await supabase.storage.from("sequences").remove([uploadData.path]);
 		return responseJSON(500, { message: insertError.message });
 	}
 
