@@ -4,5 +4,6 @@ export interface Sequence {
 	description: string;
 	created_at: string; // TODO: use Date instead
 	updated_at: string;
-	sequence_path: string;
+	filename: string;
+	filepath: string;
 }

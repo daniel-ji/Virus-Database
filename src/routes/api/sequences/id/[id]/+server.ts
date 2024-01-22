@@ -1,5 +1,5 @@
-import { supabase } from '$lib/supabaseClient.server';
-import { response } from '$lib/utils';
+import { supabase } from '$lib/services/supabaseClient.server';
+import { responseJSON } from '$lib/utils';
 import type { Sequence } from '$lib/types/sequences.interface';
 
 export async function GET({ params }: { params: { id: string } }) {
@@ -8,12 +8,12 @@ export async function GET({ params }: { params: { id: string } }) {
 	const { data, error }: { data: Sequence | null, error: any } = await supabase.from("sequences").select("*").eq("id", id).single();
 
 	if (error) {
-		return response(500, { message: error.message });
+		return responseJSON(500, { message: error.message });
 	}
 
 	if (!data) {
-		return response(404, { message: `Sequence ${id} not found` });
+		return responseJSON(404, { message: `Sequence ${id} not found` });
 	}
 
-	return response(200, data);
+	return responseJSON(200, data);
 }

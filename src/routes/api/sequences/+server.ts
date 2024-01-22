@@ -1,19 +1,19 @@
-import { supabase } from "$lib/supabaseClient.server";
-import { response } from "$lib/utils";
+import { supabase } from "$lib/services/supabaseClient.server";
+import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT, responseJSON } from "$lib/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 export async function GET() {
 	const { data, error }: { data: Sequence[] | null, error: any } = await supabase.from("sequences").select("*");
 
 	if (error) {
-		return response(500, { message: error.message });
+		return responseJSON(500, { message: error.message });
 	}
 
 	if (!data) {
-		return response(404, { message: `Sequences not found` });
+		return responseJSON(404, { message: `Sequences not found` });
 	}
 
-	return response(200, data);
+	return responseJSON(200, data);
 
 }
 
@@ -21,26 +21,38 @@ export async function GET() {
 // TODO: generate random uuid for file name
 export async function POST({ request }: { request: Request }) {
 	const formData = Object.fromEntries(await request.formData());
-	const name = formData.name;
-	const description = formData.description;
+	const name = formData.name as string;
+	const description = formData.description as string;
 	const sequence = formData.sequenceFile as File;
 
-	if (!name || !description || !sequence) {
-		return response(400, { message: `Missing required fields` });
+	if (!name || !sequence) {
+		return responseJSON(400, { message: `Missing required fields` });
+	}
+
+	if (name.length < 0 || name.length > NAME_LIMIT) {
+		return responseJSON(400, { message: `Invalid name length` });
+	}
+
+	if (description.length < 0 || description.length > DESCRIP_LIMIT) {
+		return responseJSON(400, { message: `Invalid description length` });
+	}
+
+	if (sequence.size > FILE_SIZE_LIMIT) {
+		return responseJSON(400, { message: `File size limit exceeded` });
 	}
 
 	const { data: uploadData, error: uploadError } = await supabase.storage.from("sequences").upload(sequence.name, sequence);
 
 	if (uploadError) {
-		return response(500, { message: uploadError.message });
+		return responseJSON(500, { message: uploadError.message });
 	}
 
-	const { data: insertData, error: insertError } = await supabase.from("sequences").insert({ name, description, sequence: uploadData.path })
+	const { data: insertData, error: insertError } = await supabase.from("sequences").insert({ name, description, filename: sequence.name, filepath: uploadData.path })
 
 	if (insertError) {
-		return response(500, { message: insertError.message });
+		return responseJSON(500, { message: insertError.message });
 	}
 
-	return response(200, insertData);
+	return responseJSON(200, insertData);
 
 }
