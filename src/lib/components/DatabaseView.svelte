@@ -1,52 +1,32 @@
 <script lang="ts">
-import FileSaver from "file-saver";
 import { onMount } from "svelte";
 import { browser } from "$app/environment";
 
-import type { Sequence } from "$lib/types/sequences.interface";
 import Link from "$lib/components/utils/Link.svelte";
 
-import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
-import CloudDownload from "svelte-bootstrap-icons/lib/CloudDownload.svelte";
+import editedSequence from "$lib/stores/editedSequence";
+import sequenceEntries from "$lib/stores/sequenceEntries";
 
-let sequences: Sequence[] = [];
-let sequencesState: Map<string, string> = new Map();
-enum SequenceState {
-  EDITING = "editing",
-  SAVED = "saved",
-}
+import { PencilSquare, XSquare, CheckSquare, CloudDownload } from "svelte-bootstrap-icons";
+
+import {
+  downloadSequence,
+  editSequence,
+  cancelEdits,
+  saveEdits,
+	getSequences,
+} from "$lib/utils/sequence.client";
 
 if (browser) {
-  onMount(async () => {
-    getSequences();
-  });
+  onMount(getSequences);
 }
 
-async function getSequences() {
-  const sequencesResponse = await fetch("/api/sequences");
-  if (!sequencesResponse.ok) {
-    return;
-  }
-  sequences = (await sequencesResponse.json()) as Sequence[];
-  sequencesState = new Map(sequences.map((sequence) => [sequence.id, SequenceState.SAVED]));
-  console.log(sequencesState);
-}
-
-async function downloadSequence(filepath: string) {
-  const escapedFilepath = encodeURIComponent(filepath);
-  const downloadResponse = await fetch(`/api/sequences/filepath/${escapedFilepath}`);
-
-  if (!downloadResponse.ok) {
-    alert("Could not download sequence");
-    return;
-  }
-
-  FileSaver.saveAs(await downloadResponse.blob(), filepath);
-}
+// TODO: implement
+const previewSequence = async (sequenceId: string) => {};
 </script>
 
 <div id="database-view" class="d-flex align-items-start flex-column mb-4">
-  <h2 class="text-center mb-3">Database View</h2>
+  <h2 class="mb-3">Database View</h2>
   <table class="table table-bordered w-100">
     <thead>
       <tr>
@@ -54,26 +34,39 @@ async function downloadSequence(filepath: string) {
         <th>Sequence Description</th>
         <th>Sequence File</th>
         <th>Upload Date</th>
-        <th class="text-center">Edit</th>
-        <th class="text-center">Save</th>
+        <th class="text-center px-4">&nbsp;Edit&nbsp;</th>
+        <th class="text-center">Download</th>
       </tr>
     </thead>
     <tbody>
-      {#each sequences as sequence (sequence.id)}
+      {#each $sequenceEntries as entry (entry.id)}
         <tr>
-          <td>{sequence.name}</td>
+          <td>{entry.sequence.name}</td>
           <td>
-            <div class="database-view-description">{sequence.description}</div>
+            <div class="database-view-description">{entry.sequence.description}</div>
           </td>
           <td class="database-view-link link-offset-2">
-            <Link callback={() => previewSequence(sequence.id)} content={sequence.name} />
+            <Link callback={() => previewSequence(entry.id)} content={entry.sequence.filename} />
           </td>
-          <td>{new Date(sequence.created_at).toLocaleString()}</td>
+          <td>{new Date(entry.sequence.created_at).toLocaleString()}</td>
           <td class="database-view-link text-center">
-            <Link callback={() => editSequence(sequence.id)}><PencilSquare /></Link>
+            {#if $editedSequence && $editedSequence.id === entry.id}
+              <Link callback={() => cancelEdits(false)} style="p-1 text-danger">
+                <XSquare />
+              </Link>
+              <Link callback={saveEdits} style="p-1 text-success">
+                <CheckSquare />
+              </Link>
+            {:else}
+              <Link callback={() => editSequence(entry.id)}>
+                <PencilSquare />
+              </Link>
+            {/if}
           </td>
           <td class="database-view-link text-center">
-            <Link callback={() => downloadSequence(sequence.filepath)}><CloudDownload /></Link>
+            <Link callback={() => downloadSequence(entry.sequence.filepath)} style="p-1">
+              <CloudDownload />
+            </Link>
           </td>
         </tr>
       {/each}
@@ -98,6 +91,5 @@ async function downloadSequence(filepath: string) {
 
 .database-view-link {
   color: rgb(13, 110, 253);
-  text-decoration: underline;
 }
 </style>

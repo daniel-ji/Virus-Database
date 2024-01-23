@@ -1,5 +1,5 @@
 {
 	"printWidth": 100,
-	"svelteBracketNewLine": false,
+	"svelteBracketSameLine": false,
 	"svelteIndentScriptAndStyle": false
 }

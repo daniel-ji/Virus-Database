@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/utils";
+import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/constants";
 
 let sequenceName: string = "";
 let sequenceDescription: string = "";
@@ -37,7 +37,7 @@ let uploadSequence = async () => {
   });
 
   if (!uploadResponse.ok) {
-    alert("Could not upload. Error: " + (await uploadResponse.json()).message);
+    alert("Could not upload.");
     return;
   }
 
@@ -115,12 +115,14 @@ const previewSequenceFile = () => {
         type="text"
         class="form-control w-100"
         placeholder="Sequence Name"
-        bind:value={sequenceName} />
+        bind:value={sequenceName}
+      />
       <textarea
         class="form-control mt-3"
         placeholder="Sequence Description"
         id="database-upload-description"
-        bind:value={sequenceDescription} />
+        bind:value={sequenceDescription}
+      />
     </div>
     <div id="database-upload-right" class="ps-4">
       <input
@@ -128,17 +130,20 @@ const previewSequenceFile = () => {
         class="form-control"
         id="database-upload-file"
         bind:files={sequenceFiles}
-        bind:this={sequenceInput} />
+        bind:this={sequenceInput}
+      />
       <textarea
         class="form-control mt-3"
         placeholder="Uploaded file preview (read only)"
         id="database-upload-preview"
         readonly
-        bind:value={sequenceFilePreview} />
+        bind:value={sequenceFilePreview}
+      />
     </div>
   </div>
-  <button type="button" class="btn btn-primary mt-4" on:click={uploadSequence}
-    >Upload Sequence</button>
+  <button type="button" class="btn btn-primary mt-4" on:click={uploadSequence}>
+    Upload Sequence
+  </button>
 </div>
 
 <style>

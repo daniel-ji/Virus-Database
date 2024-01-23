@@ -5,9 +5,9 @@ export let style: string = "";
 </script>
 
 <span
-  class={"pointer " + (style ?? "")}
+  class={"link-style " + (style ?? "")}
   on:click={callback}
-  on:keydown={callback}
+  on:keydown={() => {}}
   role="button"
   tabindex="0"
   >{content}

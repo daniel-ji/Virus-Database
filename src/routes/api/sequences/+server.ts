@@ -1,5 +1,6 @@
 import { supabase } from "$lib/services/supabaseClient.server";
-import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT, responseJSON } from "$lib/utils/utils";
+import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT } from "$lib/utils/constants";
+import { response, responseJSON } from "$lib/utils/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 export async function GET() {
@@ -14,11 +15,9 @@ export async function GET() {
 	}
 
 	return responseJSON(200, data);
-
 }
 
 // TODO: improve validation, upload to user folder
-// TODO: generate random uuid for file name
 export async function POST({ request }: { request: Request }) {
 	const formData = Object.fromEntries(await request.formData());
 	const name = formData.name as string;
@@ -55,6 +54,5 @@ export async function POST({ request }: { request: Request }) {
 		return responseJSON(500, { message: insertError.message });
 	}
 
-	return responseJSON(200, insertData);
-
+	return response(200);
 }

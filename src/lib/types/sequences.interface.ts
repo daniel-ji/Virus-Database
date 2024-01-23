@@ -7,3 +7,9 @@ export interface Sequence {
 	filename: string;
 	filepath: string;
 }
+
+export interface SequenceState {
+	id: string;
+	sequence: Sequence;
+	oldSequence: Sequence;
+}
