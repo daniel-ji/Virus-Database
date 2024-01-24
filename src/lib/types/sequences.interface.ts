@@ -1,4 +1,5 @@
 export interface Sequence {
+	[key: string]: any;
 	id: string;
 	name: string;
 	description: string;

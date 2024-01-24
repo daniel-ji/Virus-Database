@@ -97,6 +97,7 @@ const saveEdits = async () => {
 		return;
 	}
 
+	alert("Saved edits for sequence " + $editedSequence?.sequence.name);
 	$editedSequence !== null && ($editedSequence.oldSequence = structuredClone($editedSequence.sequence));
 	sequenceEntries.set($sequenceEntries);
 	editedSequence.set(null);

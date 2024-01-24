@@ -2,25 +2,71 @@
 import { onMount } from "svelte";
 import { browser } from "$app/environment";
 
-import Link from "$lib/components/utils/Link.svelte";
+import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 
-import { PencilSquare, XSquare, CheckSquare, CloudDownload, Trash } from "svelte-bootstrap-icons";
+import {
+  PencilSquare,
+  XSquare,
+  CheckSquare,
+  CloudDownload,
+  Trash,
+  ArrowDownUp,
+  ArrowUp,
+  ArrowDown,
+} from "svelte-bootstrap-icons";
 
 import {
   downloadSequence,
   editSequence,
   cancelEdits,
   saveEdits,
-	getSequences,
-	deleteSequence,
+  getSequences,
+  deleteSequence,
 } from "$lib/utils/sequence.client";
 
+const DATABASE_VIEW_FIELDS = [
+  { field: "name", viewName: "Sequence Name" },
+  { field: "description", viewName: "Sequence Description" },
+  { field: "filename", viewName: "Sequence File" },
+  { field: "created_at", viewName: "Upload Date" },
+  { field: "updated_at", viewName: "Last Modified" },
+];
+
 if (browser) {
-  onMount(getSequences);
+  onMount(async () => {
+    await getSequences();
+    sortBy(currentSortField, true);
+  });
 }
+
+let currentSortField: string = "name";
+let sortOrder = 1; // 1 for descending, -1 for ascending
+
+const sortBy = (field: string, forceSortDesc: boolean = false) => {
+  if (forceSortDesc) {
+    sortOrder = 1;
+  } else if (field === currentSortField) {
+    sortOrder *= -1;
+  } else {
+    currentSortField = field;
+    sortOrder = 1;
+  }
+
+  $sequenceEntries.sort((a, b) => {
+    if (a.sequence[field] < b.sequence[field]) {
+      return sortOrder * -1;
+    }
+    if (a.sequence[field] > b.sequence[field]) {
+      return sortOrder;
+    }
+    return 0;
+  });
+
+  $sequenceEntries = $sequenceEntries;
+};
 
 // TODO: implement
 const previewSequence = async (sequenceId: string) => {};
@@ -31,13 +77,30 @@ const previewSequence = async (sequenceId: string) => {};
   <table class="table table-bordered w-100">
     <thead>
       <tr>
-        <th>Sequence Name</th>
-        <th>Sequence Description</th>
-        <th>Sequence File</th>
-        <th>Upload Date</th>
+        {#each DATABASE_VIEW_FIELDS as field}
+          <th>
+            <div class="d-flex flex-row justify-content-between align-items-center">
+              <span>{field.viewName}</span>
+              <TextButton
+                callback={() => sortBy(field.field)}
+                style="p-1 {currentSortField === field.field ? 'text-primary' : 'text-secondary'}"
+              >
+                {#if currentSortField === field.field}
+                  {#if sortOrder === 1}
+                    <ArrowUp />
+                  {:else}
+                    <ArrowDown />
+                  {/if}
+                {:else}
+                  <ArrowDownUp />
+                {/if}
+              </TextButton>
+            </div>
+          </th>
+        {/each}
         <th class="text-center px-4">&nbsp;Edit&nbsp;</th>
         <th class="text-center">Download</th>
-				<th class="text-center">Delete</th>
+        <th class="text-center">Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -48,33 +111,41 @@ const previewSequence = async (sequenceId: string) => {};
             <div class="database-view-description">{entry.sequence.description}</div>
           </td>
           <td class="database-view-link link-offset-2">
-            <Link callback={() => previewSequence(entry.id)} content={entry.sequence.filename} />
+            <TextButton
+              callback={() => previewSequence(entry.id)}
+              content={entry.sequence.filename}
+            />
           </td>
           <td>{new Date(entry.sequence.created_at).toLocaleString()}</td>
+          <td
+            >{entry.sequence.updated_at === null
+              ? "N/A"
+              : new Date(entry.sequence.updated_at).toLocaleString()}</td
+          >
           <td class="database-view-link text-center">
             {#if $editedSequence && $editedSequence.id === entry.id}
-              <Link callback={() => cancelEdits(false)} style="p-1 text-danger">
+              <TextButton callback={() => cancelEdits(false)} style="p-1 text-danger">
                 <XSquare />
-              </Link>
-              <Link callback={saveEdits} style="p-1 text-success">
+              </TextButton>
+              <TextButton callback={saveEdits} style="p-1 text-success">
                 <CheckSquare />
-              </Link>
+              </TextButton>
             {:else}
-              <Link callback={() => editSequence(entry.id)}>
+              <TextButton callback={() => editSequence(entry.id)}>
                 <PencilSquare />
-              </Link>
+              </TextButton>
             {/if}
           </td>
           <td class="database-view-link text-center">
-            <Link callback={() => downloadSequence(entry.sequence.filepath)} style="p-1">
+            <TextButton callback={() => downloadSequence(entry.sequence.filepath)} style="p-1">
               <CloudDownload />
-            </Link>
+            </TextButton>
           </td>
-					<td class="database-view-link text-center">
-						<Link callback={() => deleteSequence(entry.id)} style="p-1 text-danger">
-							<Trash />
-						</Link>
-					</td>
+          <td class="database-view-link text-center">
+            <TextButton callback={() => deleteSequence(entry.id)} style="p-1 text-danger">
+              <Trash />
+            </TextButton>
+          </td>
         </tr>
       {/each}
     </tbody>
@@ -83,12 +154,21 @@ const previewSequence = async (sequenceId: string) => {};
 
 <style>
 #database-view {
-  width: 90%;
+  width: 95%;
+}
+
+#database-view th {
+  user-select: none;
 }
 
 #database-view td {
-  max-width: 30vw;
+  max-width: 25vw;
   word-break: break-all;
+  vertical-align: middle;
+}
+
+#database-view th {
+  user-select: none;
 }
 
 .database-view-description {

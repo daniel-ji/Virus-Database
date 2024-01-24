@@ -4,12 +4,7 @@ export let content: string = "";
 export let style: string = "";
 </script>
 
-<span
-  class={"link-style " + (style ?? "")}
-  on:click={callback}
-  on:keydown={() => {}}
-  role="button"
-  tabindex="0"
+<span class={style ?? ""} on:click={callback} on:keydown={() => {}} role="button" tabindex="0"
   >{content}
   <slot />
 </span>

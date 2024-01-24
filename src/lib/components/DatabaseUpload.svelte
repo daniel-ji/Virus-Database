@@ -148,7 +148,7 @@ const previewSequenceFile = () => {
 
 <style>
 #database-upload {
-  width: 90%;
+  width: 95%;
 }
 
 #database-upload-left {

@@ -33,7 +33,7 @@ import { saveEdits, cancelEdits } from "$lib/utils/sequence.client";
 
 <style>
 #database-edit {
-  width: 90%;
+  width: 95%;
 }
 
 #database-edit textarea {
