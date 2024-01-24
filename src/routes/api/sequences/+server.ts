@@ -46,7 +46,7 @@ export async function POST({ request }: { request: Request }) {
 		return responseJSON(500, { message: uploadError.message });
 	}
 
-	const { data: insertData, error: insertError } = await supabase.from("sequences").insert({ name, description, filename: sequence.name, filepath: uploadData.path })
+	const { data: insertData, error: insertError } = await supabase.from("sequences").insert({ name, description, filename: sequence.name, filepath: uploadData.path }).select();
 
 	if (insertError) {
 		// delete file if insert fails
@@ -54,5 +54,5 @@ export async function POST({ request }: { request: Request }) {
 		return responseJSON(500, { message: insertError.message });
 	}
 
-	return response(200);
+	return responseJSON(200, insertData);
 }

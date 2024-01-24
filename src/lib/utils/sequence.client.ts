@@ -3,7 +3,17 @@
 import FileSaver from "file-saver";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
+import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
 import type { Sequence, SequenceState } from "$lib/types/sequences.interface";
+
+let $currentSortField: string = "name";
+let $currentSortOrder: number = 1;
+currentSortField.subscribe((value) => {
+	$currentSortField = value;
+});
+currentSortOrder.subscribe((value) => {
+	$currentSortOrder = value;
+});
 
 let $sequenceEntries: SequenceState[] = [];
 let $editedSequence: SequenceState | null = null;
@@ -22,8 +32,32 @@ const getSequences = async () => {
 	sequenceEntries.set((await sequencesResponse.json()).map((sequence: Sequence) => ({
 		id: sequence.id,
 		sequence,
+		oldSequence: structuredClone(sequence),
 	})));
 }
+
+const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
+	if (forceSortDesc) {
+		currentSortOrder.set(1);
+	} else if (field === $currentSortField) {
+		currentSortOrder.set($currentSortOrder * -1);
+	} else {
+		currentSortField.set(field);
+		currentSortOrder.set(1);
+	}
+
+	$sequenceEntries.sort((a, b) => {
+		if (a.sequence[field] < b.sequence[field]) {
+			return $currentSortOrder * -1;
+		}
+		if (a.sequence[field] > b.sequence[field]) {
+			return $currentSortOrder;
+		}
+		return 0;
+	});
+
+	sequenceEntries.set($sequenceEntries);
+};
 
 const downloadSequence = async (filepath: string) => {
 	const escapedFilepath = encodeURIComponent(filepath);
@@ -125,4 +159,4 @@ async function deleteSequence(sequenceId: string) {
 	sequenceEntries.set($sequenceEntries);
 }
 
-export { downloadSequence, editSequence, cancelEdits, saveEdits, deleteSequence, getSequences };
+export { downloadSequence, editSequence, cancelEdits, saveEdits, deleteSequence, getSequences, sortViewBy };

@@ -47,10 +47,29 @@ export async function PATCH({ request }: { request: Request }) {
 export async function DELETE({ request }: { request: Request }) {
 	const id = request.url.split("/").slice(-1)[0];
 
-	const { error }: { error: any } = await supabase.from("sequences").delete().eq("id", id);
+	const { data, error: sequenceError }: { data: Sequence | null, error: any } = await supabase.from("sequences").select("filepath").eq("id", id).single();
 
-	if (error) {
-		return responseJSON(500, { message: error.message });
+	if (!data) {
+		return responseJSON(404, { message: `Sequence ${id} not found` });
+	}
+
+	if (sequenceError) {
+		return responseJSON(500, { message: sequenceError.message });
+	}
+
+	const { error: fileError }: { error: any } = await supabase.storage.from("sequences").remove([data.filepath]);
+
+	const { error: deleteError }: { error: any } = await supabase.from("sequences").delete().eq("id", id);
+
+	if (fileError || deleteError) {
+		if (fileError) {
+			fileError.message = `File error: ${fileError.message} \n`;
+		}
+
+		if (deleteError) {
+			deleteError.message = `Delete error: ${deleteError.message}`;
+		}
+		return responseJSON(500, { message: fileError?.message ?? "" + deleteError?.message ?? "" });
 	}
 
 	return response(200);

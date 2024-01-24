@@ -1,5 +1,10 @@
 <script lang="ts">
 import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/constants";
+import type { Sequence } from "$lib/types/sequences.interface";
+
+import sequenceEntries from "$lib/stores/sequenceEntries";
+import { currentSortField } from "$lib/stores/sortView";
+import { sortViewBy } from "$lib/utils/sequence.client";
 
 let sequenceName: string = "";
 let sequenceDescription: string = "";
@@ -41,6 +46,13 @@ let uploadSequence = async () => {
     return;
   }
 
+	const uploadResponseJson: Sequence = (await uploadResponse.json())[0];
+	$sequenceEntries.push({
+		id: uploadResponseJson.id,
+		sequence: uploadResponseJson,
+		oldSequence: structuredClone(uploadResponseJson),
+	})
+	sortViewBy($currentSortField, true);
   alert("Sequence uploaded successfully");
   sequenceName = "";
   sequenceDescription = "";

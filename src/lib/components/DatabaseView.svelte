@@ -6,6 +6,7 @@ import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
+import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
 
 import {
   PencilSquare,
@@ -25,6 +26,7 @@ import {
   saveEdits,
   getSequences,
   deleteSequence,
+	sortViewBy,
 } from "$lib/utils/sequence.client";
 
 const DATABASE_VIEW_FIELDS = [
@@ -38,35 +40,9 @@ const DATABASE_VIEW_FIELDS = [
 if (browser) {
   onMount(async () => {
     await getSequences();
-    sortBy(currentSortField, true);
+    sortViewBy($currentSortField, true);
   });
 }
-
-let currentSortField: string = "name";
-let sortOrder = 1; // 1 for descending, -1 for ascending
-
-const sortBy = (field: string, forceSortDesc: boolean = false) => {
-  if (forceSortDesc) {
-    sortOrder = 1;
-  } else if (field === currentSortField) {
-    sortOrder *= -1;
-  } else {
-    currentSortField = field;
-    sortOrder = 1;
-  }
-
-  $sequenceEntries.sort((a, b) => {
-    if (a.sequence[field] < b.sequence[field]) {
-      return sortOrder * -1;
-    }
-    if (a.sequence[field] > b.sequence[field]) {
-      return sortOrder;
-    }
-    return 0;
-  });
-
-  $sequenceEntries = $sequenceEntries;
-};
 
 // TODO: implement
 const previewSequence = async (sequenceId: string) => {};
@@ -82,11 +58,11 @@ const previewSequence = async (sequenceId: string) => {};
             <div class="d-flex flex-row justify-content-between align-items-center">
               <span>{field.viewName}</span>
               <TextButton
-                callback={() => sortBy(field.field)}
-                style="p-1 {currentSortField === field.field ? 'text-primary' : 'text-secondary'}"
+                callback={() => sortViewBy(field.field)}
+                style="p-1 {$currentSortField === field.field ? 'text-primary' : 'text-secondary'}"
               >
-                {#if currentSortField === field.field}
-                  {#if sortOrder === 1}
+                {#if $currentSortField === field.field}
+                  {#if $currentSortOrder === 1}
                     <ArrowUp />
                   {:else}
                     <ArrowDown />
