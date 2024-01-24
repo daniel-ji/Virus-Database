@@ -7,7 +7,7 @@ import Link from "$lib/components/utils/Link.svelte";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 
-import { PencilSquare, XSquare, CheckSquare, CloudDownload } from "svelte-bootstrap-icons";
+import { PencilSquare, XSquare, CheckSquare, CloudDownload, Trash } from "svelte-bootstrap-icons";
 
 import {
   downloadSequence,
@@ -15,6 +15,7 @@ import {
   cancelEdits,
   saveEdits,
 	getSequences,
+	deleteSequence,
 } from "$lib/utils/sequence.client";
 
 if (browser) {
@@ -36,6 +37,7 @@ const previewSequence = async (sequenceId: string) => {};
         <th>Upload Date</th>
         <th class="text-center px-4">&nbsp;Edit&nbsp;</th>
         <th class="text-center">Download</th>
+				<th class="text-center">Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -68,6 +70,11 @@ const previewSequence = async (sequenceId: string) => {};
               <CloudDownload />
             </Link>
           </td>
+					<td class="database-view-link text-center">
+						<Link callback={() => deleteSequence(entry.id)} style="p-1 text-danger">
+							<Trash />
+						</Link>
+					</td>
         </tr>
       {/each}
     </tbody>
@@ -76,7 +83,7 @@ const previewSequence = async (sequenceId: string) => {};
 
 <style>
 #database-view {
-  width: 85%;
+  width: 90%;
 }
 
 #database-view td {

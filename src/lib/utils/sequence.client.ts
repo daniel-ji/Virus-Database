@@ -15,14 +15,14 @@ editedSequence.subscribe((value) => {
 });
 
 const getSequences = async () => {
-  const sequencesResponse = await fetch("/api/sequences");
-  if (!sequencesResponse.ok) {
-    return;
-  }
-  sequenceEntries.set((await sequencesResponse.json()).map((sequence: Sequence) => ({
-    id: sequence.id,
-    sequence,
-  })));
+	const sequencesResponse = await fetch("/api/sequences");
+	if (!sequencesResponse.ok) {
+		return;
+	}
+	sequenceEntries.set((await sequencesResponse.json()).map((sequence: Sequence) => ({
+		id: sequence.id,
+		sequence,
+	})));
 }
 
 const downloadSequence = async (filepath: string) => {
@@ -81,7 +81,6 @@ const cancelEdits = (forceConfirm: boolean) => {
 
 // TODO: validation
 const saveEdits = async () => {
-	console.log($editedSequence);
 	const saveResponse = await fetch(`/api/sequences/id/${$editedSequence?.id}`, {
 		method: "PATCH",
 		headers: {
@@ -104,6 +103,25 @@ const saveEdits = async () => {
 }
 
 // TODO: implement
-async function deleteSequence(sequenceId: string) { }
+async function deleteSequence(sequenceId: string) {
+	const index = $sequenceEntries.findIndex((sequence) => sequence.id === sequenceId);
+	const sequenceName = $sequenceEntries[index].sequence.name;
+	if (!confirm("Delete sequence " + sequenceName + "?")) {
+		return;
+	}
+
+	const deleteResponse = await fetch(`/api/sequences/id/${sequenceId}`, {
+		method: "DELETE",
+	});
+
+	if (!deleteResponse.ok) {
+		alert("Could not delete sequence");
+		return;
+	}
+
+	alert("Deleted sequence " + sequenceName);
+	$sequenceEntries.splice(index, 1);
+	sequenceEntries.set($sequenceEntries);
+}
 
 export { downloadSequence, editSequence, cancelEdits, saveEdits, deleteSequence, getSequences };

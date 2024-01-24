@@ -43,3 +43,15 @@ export async function PATCH({ request }: { request: Request }) {
 
 	return response(200);
 }
+
+export async function DELETE({ request }: { request: Request }) {
+	const id = request.url.split("/").slice(-1)[0];
+
+	const { error }: { error: any } = await supabase.from("sequences").delete().eq("id", id);
+
+	if (error) {
+		return responseJSON(500, { message: error.message });
+	}
+
+	return response(200);
+}
