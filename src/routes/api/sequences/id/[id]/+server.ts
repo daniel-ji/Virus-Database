@@ -1,4 +1,4 @@
-import { supabase } from '$lib/services/supabaseClient.server';
+import { supabase } from '$lib/services/supabaseClient';
 import { DESCRIP_LIMIT, NAME_LIMIT } from '$lib/utils/constants';
 import { response, responseJSON } from '$lib/utils/utils';
 import type { Sequence } from '$lib/types/sequences.interface';

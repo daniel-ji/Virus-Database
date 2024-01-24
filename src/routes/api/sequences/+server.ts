@@ -1,6 +1,6 @@
-import { supabase } from "$lib/services/supabaseClient.server";
+import { supabase } from "$lib/services/supabaseClient";
 import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT } from "$lib/utils/constants";
-import { response, responseJSON } from "$lib/utils/utils";
+import { responseJSON } from "$lib/utils/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 export async function GET() {

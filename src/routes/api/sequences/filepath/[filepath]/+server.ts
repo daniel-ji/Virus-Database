@@ -1,4 +1,4 @@
-import { supabase } from '$lib/services/supabaseClient.server';
+import { supabase } from '$lib/services/supabaseClient';
 import { responseJSON, responseBlob } from '$lib/utils/utils';
 
 export async function GET({ params }: { params: { filepath: string } }) {

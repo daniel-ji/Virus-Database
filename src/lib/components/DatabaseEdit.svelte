@@ -23,10 +23,10 @@ import { saveEdits, cancelEdits } from "$lib/utils/sequence.client";
       bind:value={$editedSequence.sequence.description}
     />
     <div class="mt-4 d-flex w-100 justify-content-end">
-      <button type="button" class="btn btn-danger mb-4 me-3" on:click={() => cancelEdits(false)}>
+      <button type="button" class="btn btn-danger me-3" on:click={() => cancelEdits(false)}>
         Cancel Edits
       </button>
-      <button type="button" class="btn btn-success mb-4" on:click={saveEdits}>Save Edits</button>
+      <button type="button" class="btn btn-success" on:click={saveEdits}>Save Edits</button>
     </div>
   </div>
 {/if}

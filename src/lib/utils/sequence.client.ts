@@ -1,6 +1,8 @@
 // Functions for CRUD & editing sequences
 
 import FileSaver from "file-saver";
+
+import { supabase } from "$lib/services/supabaseClient";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
@@ -24,19 +26,27 @@ editedSequence.subscribe((value) => {
 	$editedSequence = value;
 });
 
-const getSequences = async () => {
-	const sequencesResponse = await fetch("/api/sequences");
-	if (!sequencesResponse.ok) {
+export const getSequences = async () => {
+	// const sequencesResponse = await fetch("/api/sequences");
+	// if (!sequencesResponse.ok) {
+	// 	return;
+	// }
+	// const sequences = await sequencesResponse.json();
+	
+	const { data: sequences, error } = await supabase.from("sequences").select("*");
+
+	if (error) {
 		return;
 	}
-	sequenceEntries.set((await sequencesResponse.json()).map((sequence: Sequence) => ({
+
+	sequenceEntries.set(sequences.map((sequence: Sequence) => ({
 		id: sequence.id,
 		sequence,
 		oldSequence: structuredClone(sequence),
 	})));
 }
 
-const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
+export const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
 	if (forceSortDesc) {
 		currentSortOrder.set(1);
 	} else if (field === $currentSortField) {
@@ -59,7 +69,7 @@ const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
 	sequenceEntries.set($sequenceEntries);
 };
 
-const downloadSequence = async (filepath: string) => {
+export const downloadSequence = async (filepath: string) => {
 	const escapedFilepath = encodeURIComponent(filepath);
 	const downloadResponse = await fetch(`/api/sequences/filepath/${escapedFilepath}`);
 
@@ -71,7 +81,7 @@ const downloadSequence = async (filepath: string) => {
 	FileSaver.saveAs(await downloadResponse.blob(), filepath);
 }
 
-const editSequence = async (sequenceId: string) => {
+export const editSequence = async (sequenceId: string) => {
 	if (!cancelEdits(true)) {
 		return;
 	}
@@ -86,7 +96,7 @@ const editSequence = async (sequenceId: string) => {
 /**
  * @returns {Boolean} True if edits were cancelled or there were no edits to cancel, false otherwise
  */
-const cancelEdits = (forceConfirm: boolean) => {
+export const cancelEdits = (forceConfirm: boolean) => {
 	if ($editedSequence === null) {
 		return true;
 	}
@@ -114,7 +124,7 @@ const cancelEdits = (forceConfirm: boolean) => {
 }
 
 // TODO: validation
-const saveEdits = async () => {
+export const saveEdits = async () => {
 	const saveResponse = await fetch(`/api/sequences/id/${$editedSequence?.id}`, {
 		method: "PATCH",
 		headers: {
@@ -138,7 +148,7 @@ const saveEdits = async () => {
 }
 
 // TODO: implement
-async function deleteSequence(sequenceId: string) {
+export const deleteSequence = async (sequenceId: string) => {
 	const index = $sequenceEntries.findIndex((sequence) => sequence.id === sequenceId);
 	const sequenceName = $sequenceEntries[index].sequence.name;
 	if (!confirm("Delete sequence " + sequenceName + "?")) {
@@ -158,5 +168,3 @@ async function deleteSequence(sequenceId: string) {
 	$sequenceEntries.splice(index, 1);
 	sequenceEntries.set($sequenceEntries);
 }
-
-export { downloadSequence, editSequence, cancelEdits, saveEdits, deleteSequence, getSequences, sortViewBy };
