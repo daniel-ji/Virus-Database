@@ -36,6 +36,8 @@ async function login() {
       password,
     });
 
+		loading = false;
+
     if (error) {
       if (error.status === 400) {
         failedLogin = true;
