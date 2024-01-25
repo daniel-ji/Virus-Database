@@ -1,4 +1,7 @@
 <script lang="ts">
+import { VALID_PASSWORD } from "$lib/utils/constants.js";
+import { fail } from "@sveltejs/kit";
+
 export let data;
 let { supabase } = data;
 $: ({ supabase } = data);
@@ -9,7 +12,10 @@ $: emailValid = (email.length > 0 && email.length < 50) || !emailEdited;
 
 let password: string = "";
 let passwordEdited: boolean = false;
-$: passwordValid = (password.length > 12 && password.length < 50) || !passwordEdited;
+$: passwordValid = password.length > 0 || !passwordEdited;
+
+let failedLogin: boolean = false;
+let succesfulLogin: boolean = false;
 
 async function login() {
   if (emailValid && emailEdited && passwordValid && passwordEdited) {
@@ -21,12 +27,16 @@ async function login() {
     if (error) {
       if (error.status === 400) {
         alert("Invalid email or password.");
+        failedLogin = true;
       } else {
         alert("Failed to log in. Please try again later.");
       }
     } else {
-      alert("Logged in successfully. Redirecting to database...");
-      window.location.href = "/dashboard";
+      failedLogin = false;
+			succesfulLogin = true;
+			setTimeout(() => {
+				window.location.href = "/dashboard";
+			}, 1000);
     }
   } else {
     emailEdited = true;
@@ -38,7 +48,7 @@ async function login() {
 <div id="log-in" class="mb-5">
   <h1 class="mb-4">Database Log In</h1>
 
-  <div id="log-in-form" class="px-5 pt-4 pb-5">
+  <div id="log-in-form" class="px-5 pt-4 pb-4">
     <label for="email" class="form-label">Email</label>
     <input
       id="email"
@@ -57,7 +67,13 @@ async function login() {
       on:input={() => (passwordEdited = true)}
       bind:value={password}
     />
-    <button class="btn btn-primary w-100 mt-4" on:click={login}>Log In</button>
+    <button class="btn btn-primary w-100 mt-4 mb-4" on:click={login}>Log In</button>
+    {#if failedLogin}
+      <div class="text-danger w-100 text-center">Invalid email and/or password.</div>
+    {/if}
+		{#if succesfulLogin}
+			<div class="text-success w-100 text-center">Logged in, redirecting to dashboard...</div>
+		{/if}
   </div>
 </div>
 

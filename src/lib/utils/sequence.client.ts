@@ -62,9 +62,14 @@ export const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
 	sequenceEntries.set($sequenceEntries);
 };
 
-export const downloadSequence = async (filepath: string) => {
+export const fetchSequence = async (filepath: string, kilabytes?: number) => {
 	const escapedFilepath = encodeURIComponent(filepath);
-	const downloadResponse = await fetch(`/api/sequences/filepath/${escapedFilepath}`);
+	const params = kilabytes ? `?kb=${kilabytes}` : "";
+	return await fetch(`/api/sequences/filepath/${escapedFilepath}${params}`);
+}
+
+export const downloadSequence = async (filepath: string, kilabytes?: number) => {
+	const downloadResponse = await fetchSequence(filepath, kilabytes);
 
 	if (!downloadResponse.ok) {
 		alert("Could not download sequence");

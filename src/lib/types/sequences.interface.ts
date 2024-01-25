@@ -7,6 +7,7 @@ export interface Sequence {
 	updated_at: string;
 	filename: string;
 	filepath: string;
+	file_preview?: string;
 }
 
 export interface SequenceState {

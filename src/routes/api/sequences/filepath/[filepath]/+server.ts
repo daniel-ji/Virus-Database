@@ -1,19 +1,31 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { responseJSON, responseBlob } from '$lib/utils/utils';
 
-export async function GET({ params, locals: { supabase } }: { params: { filepath: string }, locals: { supabase: SupabaseClient } }) {
+export async function GET({ url, params, locals: { supabase } }: { url: URL, params: { filepath: string }, locals: { supabase: SupabaseClient } }) {
 	const { filepath } = params;
+	const kilabytes = url.searchParams.get("kb");
 	const unescapedPath = decodeURIComponent(filepath);
-
+	
 	const { data, error }: { data: Blob | null, error: any } = await supabase.storage.from("sequences").download(unescapedPath);
 
 	if (error) {
-		return responseJSON(500, { message: error.message });
+		if (error.status === 400) {
+			return responseJSON(400, { message: `Sequence ${unescapedPath} not found` });
+		} else {
+			return responseJSON(500, { message: error.message });
+		}
 	}
 
 	if (!data) {
-		return responseJSON(404, { message: `Sequence ${unescapedPath} not found` });
+		return responseJSON(400, { message: `Sequence ${unescapedPath} not found` });
 	}
 
-	return responseBlob(200, data);
+	if (kilabytes) {
+		const kilabytesNum = parseInt(kilabytes);
+		const bytes = kilabytesNum * 1024;
+		const blob = new Blob([data.slice(0, bytes)], { type: data.type });
+		return responseBlob(200, blob);
+	} else {
+		return responseBlob(200, data);
+	}
 }

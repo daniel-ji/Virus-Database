@@ -7,6 +7,7 @@ import TextButton from "$lib/components/utils/TextButton.svelte";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
+import { IS_TEXT_FILE_NAME } from "$lib/utils/constants";
 
 // import {
 //   PencilSquare,
@@ -35,7 +36,8 @@ import {
   saveEdits,
   getSequences,
   deleteSequence,
-	sortViewBy,
+  sortViewBy,
+  fetchSequence,
 } from "$lib/utils/sequence.client";
 
 const DATABASE_VIEW_FIELDS = [
@@ -53,8 +55,40 @@ if (browser) {
   });
 }
 
-// TODO: implement
-const previewSequence = async (sequenceId: string) => {};
+let previewText: string = "";
+
+const previewSequence = async (sequenceId: string) => {
+  const index = $sequenceEntries.findIndex((entry) => entry.id === sequenceId);
+  if (!IS_TEXT_FILE_NAME($sequenceEntries[index].sequence.filepath)) {
+    alert("Cannot preview non-text files.");
+    return;
+  }
+
+  if ($sequenceEntries[index].sequence.file_preview) {
+    previewText = $sequenceEntries[index].sequence.file_preview ?? "";
+  } else {
+    const filepath = $sequenceEntries[index].sequence.filepath;
+    const sequenceFile = await fetchSequence(filepath, 100);
+    previewText = await (await sequenceFile.blob()).text();
+    $sequenceEntries[index].sequence.file_preview = previewText;
+    $sequenceEntries = $sequenceEntries;
+  }
+
+  window.addEventListener("keydown", escClosePreview);
+  document.body.classList.add("modal-open");
+};
+
+const closePreview = () => {
+  previewText = "";
+  document.body.classList.remove("modal-open");
+  window.removeEventListener("keydown", escClosePreview);
+};
+
+const escClosePreview = (event: any) => {
+  if (event.key === "Escape") {
+    closePreview();
+  }
+};
 </script>
 
 <div id="database-view" class="d-flex align-items-start flex-column mb-4">
@@ -109,10 +143,10 @@ const previewSequence = async (sequenceId: string) => {};
           >
           <td class="database-view-link text-center">
             {#if $editedSequence && $editedSequence.id === entry.id}
-              <TextButton callback={() => cancelEdits(false)} style="p-1 text-danger">
+              <TextButton callback={() => cancelEdits(false)} style="text-danger">
                 <XSquare />
               </TextButton>
-              <TextButton callback={saveEdits} style="p-1 text-success">
+              <TextButton callback={saveEdits} style="text-success">
                 <CheckSquare />
               </TextButton>
             {:else}
@@ -122,12 +156,12 @@ const previewSequence = async (sequenceId: string) => {};
             {/if}
           </td>
           <td class="database-view-link text-center">
-            <TextButton callback={() => downloadSequence(entry.sequence.filepath)} style="p-1">
+            <TextButton callback={() => downloadSequence(entry.sequence.filepath)}>
               <CloudDownload />
             </TextButton>
           </td>
           <td class="database-view-link text-center">
-            <TextButton callback={() => deleteSequence(entry.id)} style="p-1 text-danger">
+            <TextButton callback={() => deleteSequence(entry.id)} style="text-danger">
               <Trash />
             </TextButton>
           </td>
@@ -135,6 +169,24 @@ const previewSequence = async (sequenceId: string) => {};
       {/each}
     </tbody>
   </table>
+
+  {#if previewText !== ""}
+    <div id="preview-sequence-modal">
+      <div id="preview-sequence-container">
+        <div
+          id="preview-sequence-header"
+          class="w-100 d-flex align-items-center justify-content-between"
+        >
+          <h4>Preview (First 10KB)</h4>
+          <TextButton callback={closePreview}>
+            <XSquare />
+          </TextButton>
+        </div>
+        <hr />
+        <pre>{previewText}</pre>
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -163,5 +215,28 @@ const previewSequence = async (sequenceId: string) => {};
 
 .database-view-link {
   color: rgb(13, 110, 253);
+}
+
+#preview-sequence-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#preview-sequence-container {
+  width: 80%;
+  height: 80%;
+  background-color: white;
+  padding: 1rem;
+  overflow: auto;
 }
 </style>
