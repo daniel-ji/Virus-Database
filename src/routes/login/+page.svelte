@@ -16,9 +16,21 @@ $: passwordValid = password.length > 0 || !passwordEdited;
 
 let failedLogin: boolean = false;
 let succesfulLogin: boolean = false;
+let loading: boolean = false;
 
 async function login() {
   if (emailValid && emailEdited && passwordValid && passwordEdited) {
+		if (loading) {
+			return alert("Loading...");
+		}
+
+		failedLogin = false;
+		loading = true;
+
+		if (!VALID_PASSWORD(password)) {
+			failedLogin = true;
+		}
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -26,7 +38,6 @@ async function login() {
 
     if (error) {
       if (error.status === 400) {
-        alert("Invalid email or password.");
         failedLogin = true;
       } else {
         alert("Failed to log in. Please try again later.");
@@ -68,11 +79,12 @@ async function login() {
       bind:value={password}
     />
     <button class="btn btn-primary w-100 mt-4 mb-4" on:click={login}>Log In</button>
-    {#if failedLogin}
-      <div class="text-danger w-100 text-center">Invalid email and/or password.</div>
-    {/if}
 		{#if succesfulLogin}
 			<div class="text-success w-100 text-center">Logged in, redirecting to dashboard...</div>
+		{:else if failedLogin}
+			<div class="text-danger w-100 text-center">Invalid email and/or password.</div>
+		{:else if loading}
+			<div class="text-primary w-100 text-center">Loading...</div>
 		{/if}
   </div>
 </div>

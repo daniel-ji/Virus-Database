@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import supabaseAdmin from "$lib/services/supabaseServerClient";
 import { response, responseJSON } from "$lib/utils/utils";
 
 export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
@@ -21,6 +22,15 @@ export async function POST({ request, locals: { supabase } }: { request: Request
 
 	if (error) {
 		return responseJSON(error.status ?? 500, { message: error.message });
+	}
+
+	if (data?.user) {
+		const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(data.user.id);
+		if (userData?.user === null) {
+			await supabase.auth.signInWithOtp({
+				email
+			});
+		}
 	}
 
 	return response(200);

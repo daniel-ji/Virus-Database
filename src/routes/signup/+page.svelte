@@ -22,6 +22,10 @@ let confirmPasswordEdited: boolean = false;
 $: confirmPasswordValid =
   (confirmPassword.length > 0 && confirmPassword === password) || !confirmPasswordEdited;
 
+let loading: boolean = false;
+let successfulSignUp: boolean = false;
+let failedMessage: string = "";
+
 async function signUp() {
   if (
     firstNameValid &&
@@ -35,6 +39,12 @@ async function signUp() {
     confirmPasswordValid &&
     confirmPasswordEdited
   ) {
+		if (loading) {
+			return alert("Loading...");
+		}
+
+    failedMessage = "";
+    loading = true;
     const body = {
       firstName,
       lastName,
@@ -50,10 +60,11 @@ async function signUp() {
       body: JSON.stringify(body),
     });
 
+    loading = false;
     if (response.ok) {
-      alert("Signed up successfully. Please check your email to verify your account.");
+      successfulSignUp = true;
     } else {
-      alert("Failed to sign up.");
+      failedMessage = "Failed to sign up. Please try again.";
     }
   } else {
     firstNameEdited = true;
@@ -68,7 +79,7 @@ async function signUp() {
 <div id="sign-up" class="mb-5">
   <h1 class="mb-4">Database Sign Up</h1>
 
-  <div id="sign-up-form" class="px-5 pt-4 pb-5">
+  <div id="sign-up-form" class="px-5 pt-4 pb-4">
     <div class="d-flex justify-content-between">
       <div class="me-4">
         <label for="first-name" class="form-label">First Name</label>
@@ -95,48 +106,57 @@ async function signUp() {
         <div class="invalid-feedback">Please enter a valid last name.</div>
       </div>
     </div>
-		<div>
-			<label for="email" class="form-label mt-3">Email</label>
-			<input
-				id="email"
-				type="text"
-				class="form-control {emailValid ? '' : 'is-invalid'}"
-				placeholder="Email"
-				on:input={() => (emailEdited = true)}
-				bind:value={email}
-			/>
-			<div class="invalid-feedback">Please enter a valid email.</div>
-		</div>
-		<div>
-			<label for="password" class="form-label mt-3">Password</label>
-			<input
-				id="password"
-				type="password"
-				class="form-control {passwordValid ? '' : 'is-invalid'}"
-				placeholder="Password"
-				on:input={() => (passwordEdited = true)}
-				bind:value={password}
-			/>
-			<div class="invalid-feedback">
-				<span class="small">
-					Please enter a valid password (12 characters, 1 number, 1 uppercase letter, 1 lowercase
-					letter).
-				</span>
-			</div>
-		</div>
-		<div>
-			<label for="confirm-password" class="form-label mt-3">Confirm Password</label>
-			<input
-				id="confirm-password"
-				type="password"
-				class="form-control {confirmPasswordValid ? '' : 'is-invalid'}"
-				placeholder="Confirm Password"
-				on:input={() => (confirmPasswordEdited = true)}
-				bind:value={confirmPassword}
-			/>
-			<div class="invalid-feedback">Please enter the same password.</div>
-		</div>
-    <button class="btn btn-primary w-100 mt-4" on:click={signUp}>Sign Up</button>
+    <div>
+      <label for="email" class="form-label mt-3">Email</label>
+      <input
+        id="email"
+        type="text"
+        class="form-control {emailValid ? '' : 'is-invalid'}"
+        placeholder="Email"
+        on:input={() => (emailEdited = true)}
+        bind:value={email}
+      />
+      <div class="invalid-feedback">Please enter a valid email.</div>
+    </div>
+    <div>
+      <label for="password" class="form-label mt-3">Password</label>
+      <input
+        id="password"
+        type="password"
+        class="form-control {passwordValid ? '' : 'is-invalid'}"
+        placeholder="Password"
+        on:input={() => (passwordEdited = true)}
+        bind:value={password}
+      />
+      <div class="invalid-feedback">
+        <span class="small">
+          Please enter a valid password (12 characters, 1 number, 1 uppercase letter, 1 lowercase
+          letter).
+        </span>
+      </div>
+    </div>
+    <div>
+      <label for="confirm-password" class="form-label mt-3">Confirm Password</label>
+      <input
+        id="confirm-password"
+        type="password"
+        class="form-control {confirmPasswordValid ? '' : 'is-invalid'}"
+        placeholder="Confirm Password"
+        on:input={() => (confirmPasswordEdited = true)}
+        bind:value={confirmPassword}
+      />
+      <div class="invalid-feedback">Please enter the same password.</div>
+    </div>
+    <button class="btn btn-primary w-100 my-4" on:click={signUp}>Sign Up</button>
+    {#if successfulSignUp}
+      <div class="text-success w-100 text-center">
+        Signed up successfully. Check your email to verify your account.
+      </div>
+    {:else if failedMessage !== ""}
+      <div class="text-danger w-100 text-center">{failedMessage}</div>
+    {:else if loading}
+      <div class="text-primary w-100 text-center">Loading...</div>
+    {/if}
   </div>
 </div>
 
