@@ -1,7 +1,7 @@
-import { supabase } from "$lib/services/supabaseClient.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { response, responseJSON } from "$lib/utils/utils";
 
-export async function POST({ request }: { request: Request }) {
+export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const userData = await request.json();
 	const email = userData.email as string;
 	const password = userData.password as string;

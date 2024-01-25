@@ -1,9 +1,9 @@
-import { supabase } from "$lib/services/supabaseClient";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT } from "$lib/utils/constants";
 import { responseJSON } from "$lib/utils/utils";
 import type { Sequence } from "$lib/types/sequences.interface";
 
-export async function GET() {
+export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { supabase: SupabaseClient } }) => {
 	const { data, error }: { data: Sequence[] | null, error: any } = await supabase.from("sequences").select("*");
 
 	if (error) {
@@ -18,7 +18,7 @@ export async function GET() {
 }
 
 // TODO: improve validation, upload to user folder
-export async function POST({ request }: { request: Request }) {
+export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const formData = Object.fromEntries(await request.formData());
 	const name = formData.name as string;
 	const description = formData.description as string;

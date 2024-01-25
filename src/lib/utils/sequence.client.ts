@@ -2,7 +2,6 @@
 
 import FileSaver from "file-saver";
 
-import { supabase } from "$lib/services/supabaseClient";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
@@ -27,17 +26,11 @@ editedSequence.subscribe((value) => {
 });
 
 export const getSequences = async () => {
-	// const sequencesResponse = await fetch("/api/sequences");
-	// if (!sequencesResponse.ok) {
-	// 	return;
-	// }
-	// const sequences = await sequencesResponse.json();
-	
-	const { data: sequences, error } = await supabase.from("sequences").select("*");
-
-	if (error) {
+	const sequencesResponse = await fetch("/api/sequences");
+	if (!sequencesResponse.ok) {
 		return;
 	}
+	const sequences = await sequencesResponse.json();
 
 	sequenceEntries.set(sequences.map((sequence: Sequence) => ({
 		id: sequence.id,

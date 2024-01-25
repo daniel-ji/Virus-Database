@@ -1,20 +1,31 @@
 <script>
-import { supabase } from "$lib/services/supabaseClient";
+import { invalidate } from "$app/navigation";
 import { onMount } from "svelte";
-
-import { retrieveSession, session, user } from "$lib/stores/user";
+import { page } from "$app/stores";
 import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import "$lib/styles/global.css";
 
+export let data;
+let { supabase, session } = data;
+$: ({ supabase, session } = data);
+
 onMount(() => {
-  retrieveSession();
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, _session) => {
+    if (_session?.expires_at !== session?.expires_at) {
+      invalidate("supabase:auth");
+    }
+  });
+
+  return () => subscription.unsubscribe();
 });
 
 const logout = async () => {
-  await supabase.auth.signOut();
-  $user = null;
-	$session = null;
+  await $page.data.supabase.auth.signOut();
+  alert("Logged out successfully. Redirecting to home page...");
+  window.location.href = "/";
 };
 </script>
 
@@ -22,9 +33,9 @@ const logout = async () => {
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Virus Database Web Client</a>
     <span class="navbar-text me-2">
-      {#if $user}
+      {#if $page.data.session}
         <span class="me-2">
-          Hello, {$user.user_metadata.first_name}!
+          Hello, {$page.data.session.user.user_metadata.first_name}!
         </span>
         <TextButton callback={logout} style="underline">Log Out</TextButton>
       {:else}

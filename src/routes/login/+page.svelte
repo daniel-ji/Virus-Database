@@ -1,5 +1,7 @@
 <script lang="ts">
-import { supabase } from "$lib/services/supabaseClient";
+export let data;
+let { supabase } = data;
+$: ({ supabase } = data);
 
 let email: string = "";
 let emailEdited: boolean = false;
@@ -16,16 +18,16 @@ async function login() {
       password,
     });
 
-		if (error) {
-			if (error.status === 400) {
-				alert("Invalid email or password.");
-			} else {
-				alert("Failed to log in. Please try again later.");
-			}
-		} else {
-			alert("Logged in successfully. Redirecting to database...");
-			window.location.href = "/";
-		}
+    if (error) {
+      if (error.status === 400) {
+        alert("Invalid email or password.");
+      } else {
+        alert("Failed to log in. Please try again later.");
+      }
+    } else {
+      alert("Logged in successfully. Redirecting to database...");
+      window.location.href = "/dashboard";
+    }
   } else {
     emailEdited = true;
     passwordEdited = true;

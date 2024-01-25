@@ -8,16 +8,25 @@ import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
 
-import {
-  PencilSquare,
-  XSquare,
-  CheckSquare,
-  CloudDownload,
-  Trash,
-  ArrowDownUp,
-  ArrowUp,
-  ArrowDown,
-} from "svelte-bootstrap-icons";
+// import {
+//   PencilSquare,
+//   XSquare,
+//   CheckSquare,
+//   CloudDownload,
+//   Trash,
+//   ArrowDownUp,
+//   ArrowUp,
+//   ArrowDown,
+// } from "svelte-bootstrap-icons";
+
+import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
+import XSquare from "svelte-bootstrap-icons/lib/XSquare.svelte";
+import CheckSquare from "svelte-bootstrap-icons/lib/CheckSquare.svelte";
+import CloudDownload from "svelte-bootstrap-icons/lib/CloudDownload.svelte";
+import Trash from "svelte-bootstrap-icons/lib/Trash.svelte";
+import ArrowDownUp from "svelte-bootstrap-icons/lib/ArrowDownUp.svelte";
+import ArrowUp from "svelte-bootstrap-icons/lib/ArrowUp.svelte";
+import ArrowDown from "svelte-bootstrap-icons/lib/ArrowDown.svelte";
 
 import {
   downloadSequence,

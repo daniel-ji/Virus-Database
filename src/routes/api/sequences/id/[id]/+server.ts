@@ -1,9 +1,9 @@
-import { supabase } from '$lib/services/supabaseClient';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { DESCRIP_LIMIT, NAME_LIMIT } from '$lib/utils/constants';
 import { response, responseJSON } from '$lib/utils/utils';
 import type { Sequence } from '$lib/types/sequences.interface';
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET({ params, locals: { supabase } }: { params: { id: string }, locals: { supabase: SupabaseClient } }) {
 	const { id } = params;
 
 	const { data, error }: { data: Sequence | null, error: any } = await supabase.from("sequences").select("*").eq("id", id).single();
@@ -19,7 +19,7 @@ export async function GET({ params }: { params: { id: string } }) {
 	return responseJSON(200, data);
 }
 
-export async function PATCH({ request }: { request: Request }) {
+export async function PATCH({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const id = request.url.split("/").slice(-1)[0];
 	const { name, description } = await request.json();
 
@@ -44,7 +44,7 @@ export async function PATCH({ request }: { request: Request }) {
 	return response(200);
 }
 
-export async function DELETE({ request }: { request: Request }) {
+export async function DELETE({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const id = request.url.split("/").slice(-1)[0];
 
 	const { data, error: sequenceError }: { data: Sequence | null, error: any } = await supabase.from("sequences").select("filepath").eq("id", id).single();

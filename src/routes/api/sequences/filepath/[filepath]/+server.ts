@@ -1,7 +1,7 @@
-import { supabase } from '$lib/services/supabaseClient';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { responseJSON, responseBlob } from '$lib/utils/utils';
 
-export async function GET({ params }: { params: { filepath: string } }) {
+export async function GET({ params, locals: { supabase } }: { params: { filepath: string }, locals: { supabase: SupabaseClient } }) {
 	const { filepath } = params;
 	const unescapedPath = decodeURIComponent(filepath);
 
