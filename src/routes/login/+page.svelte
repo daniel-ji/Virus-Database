@@ -1,6 +1,5 @@
 <script lang="ts">
 import { VALID_PASSWORD } from "$lib/utils/constants.js";
-import { fail } from "@sveltejs/kit";
 
 export let data;
 let { supabase } = data;
