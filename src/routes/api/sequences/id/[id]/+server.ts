@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { DESCRIP_LIMIT, NAME_LIMIT } from '$lib/utils/constants';
-import { response, responseJSON } from '$lib/utils/utils';
+import { VALID_DESCRIPTION, VALID_SEQUENCE_NAME } from '$lib/utils/validation';
+import { response, responseJSON } from '$lib/utils/responses';
 import type { Sequence } from '$lib/types/sequences.interface';
 
 export async function GET({ params, locals: { supabase } }: { params: { id: string }, locals: { supabase: SupabaseClient } }) {
@@ -19,6 +19,7 @@ export async function GET({ params, locals: { supabase } }: { params: { id: stri
 	return responseJSON(200, data);
 }
 
+// QUESTION: allow for updating the file? if so, do validation
 export async function PATCH({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const id = request.url.split("/").slice(-1)[0];
 	const { name, description } = await request.json();
@@ -27,12 +28,8 @@ export async function PATCH({ request, locals: { supabase } }: { request: Reques
 		return responseJSON(400, { message: `Missing required fields` });
 	}
 
-	if (name.length < 0 || name.length > NAME_LIMIT) {
-		return responseJSON(400, { message: `Invalid name length` });
-	}
-
-	if (description !== undefined && description.length > DESCRIP_LIMIT) {
-		return responseJSON(400, { message: `Invalid description length` });
+	if (!VALID_SEQUENCE_NAME(name) || (description !== undefined && !VALID_DESCRIPTION(description))) {
+		return responseJSON(400, { message: `Invalid input` });
 	}
 
 	const { data, error }: { data: Sequence | null, error: any } = await supabase.from("sequences").update({ name, description }).eq("id", id);

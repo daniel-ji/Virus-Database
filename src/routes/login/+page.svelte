@@ -1,5 +1,5 @@
 <script lang="ts">
-import { VALID_PASSWORD } from "$lib/utils/constants.js";
+import { VALID_EMAIL, VALID_PASSWORD } from "$lib/utils/validation.js";
 
 export let data;
 let { supabase } = data;
@@ -7,7 +7,7 @@ $: ({ supabase } = data);
 
 let email: string = "";
 let emailEdited: boolean = false;
-$: emailValid = (email.length > 0 && email.length < 50) || !emailEdited;
+$: emailValid = VALID_EMAIL(email) || !emailEdited;
 
 let password: string = "";
 let passwordEdited: boolean = false;

@@ -1,17 +1,17 @@
 <script lang="ts">
-import { VALID_PASSWORD } from "$lib/utils/constants";
+import { VALID_PASSWORD, VALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME } from "$lib/utils/validation";
 
 let firstName: string = "";
 let firstNameEdited: boolean = false;
-$: firstNameValid = (firstName.length > 0 && firstName.length < 50) || !firstNameEdited;
+$: firstNameValid = VALID_FIRST_NAME(firstName) || !firstNameEdited;
 
 let lastName: string = "";
 let lastNameEdited: boolean = false;
-$: lastNameValid = (lastName.length > 0 && lastName.length < 50) || !lastNameEdited;
+$: lastNameValid = VALID_LAST_NAME(lastName) || !lastNameEdited;
 
 let email: string = "";
 let emailEdited: boolean = false;
-$: emailValid = (email.length > 0 && email.length < 50) || !emailEdited;
+$: emailValid = VALID_EMAIL(email) || !emailEdited;
 
 let password: string = "";
 let passwordEdited: boolean = false;

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { NAME_LIMIT, DESCRIP_LIMIT, FILE_SIZE_LIMIT } from "$lib/utils/constants";
-import { responseJSON } from "$lib/utils/utils";
+import { FILE_SIZE_LIMIT, VALID_SEQUENCE_NAME, VALID_DESCRIPTION } from "$lib/utils/validation";
+import { responseJSON } from "$lib/utils/responses";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { supabase: SupabaseClient } }) => {
@@ -17,7 +17,7 @@ export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { s
 	return responseJSON(200, data);
 }
 
-// TODO: improve validation, upload to user folder
+// TODO: upload to user folder
 export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const formData = Object.fromEntries(await request.formData());
 	const name = formData.name as string;
@@ -28,12 +28,8 @@ export async function POST({ request, locals: { supabase } }: { request: Request
 		return responseJSON(400, { message: `Missing required fields` });
 	}
 
-	if (name.length < 0 || name.length > NAME_LIMIT) {
-		return responseJSON(400, { message: `Invalid name length` });
-	}
-
-	if (description.length < 0 || description.length > DESCRIP_LIMIT) {
-		return responseJSON(400, { message: `Invalid description length` });
+	if (!VALID_SEQUENCE_NAME(name) || !VALID_DESCRIPTION(description)) {
+		return responseJSON(400, { message: `Invalid input` });
 	}
 
 	if (sequence.size > FILE_SIZE_LIMIT) {

@@ -145,7 +145,6 @@ export const saveEdits = async () => {
 	editedSequence.set(null);
 }
 
-// TODO: implement
 export const deleteSequence = async (sequenceId: string) => {
 	const index = $sequenceEntries.findIndex((sequence) => sequence.id === sequenceId);
 	const sequenceName = $sequenceEntries[index].sequence.name;

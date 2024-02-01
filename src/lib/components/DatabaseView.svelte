@@ -7,7 +7,7 @@ import TextButton from "$lib/components/utils/TextButton.svelte";
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
-import { IS_TEXT_FILE_NAME } from "$lib/utils/constants";
+import { IS_TEXT_FILE_NAME } from "$lib/utils/validation";
 
 // import {
 //   PencilSquare,
@@ -21,6 +21,7 @@ import { IS_TEXT_FILE_NAME } from "$lib/utils/constants";
 // } from "svelte-bootstrap-icons";
 
 import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
+import X from "svelte-bootstrap-icons/lib/X.svelte";
 import XSquare from "svelte-bootstrap-icons/lib/XSquare.svelte";
 import CheckSquare from "svelte-bootstrap-icons/lib/CheckSquare.svelte";
 import CloudDownload from "svelte-bootstrap-icons/lib/CloudDownload.svelte";
@@ -57,6 +58,8 @@ if (browser) {
 
 let previewText: string = "";
 
+// TODO: Store previewed sequences in some cache or IndexedDB
+// TODO: Allow loading of more than just the first 10KB of a file
 const previewSequence = async (sequenceId: string) => {
   const index = $sequenceEntries.findIndex((entry) => entry.id === sequenceId);
   if (!IS_TEXT_FILE_NAME($sequenceEntries[index].sequence.filepath)) {
@@ -179,7 +182,7 @@ const escClosePreview = (event: any) => {
         >
           <h4>Preview (First 10KB)</h4>
           <TextButton callback={closePreview}>
-            <XSquare />
+            <X />
           </TextButton>
         </div>
         <hr />

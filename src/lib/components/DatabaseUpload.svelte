@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/constants";
+import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/validation";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 import sequenceEntries from "$lib/stores/sequenceEntries";
