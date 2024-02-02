@@ -23,7 +23,10 @@ onMount(() => {
 });
 
 const logout = async () => {
-  await $page.data.supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+	if (error) {
+		return alert("Error logging out: " + error.message);
+	}
   alert("Logged out successfully. Redirecting to home page...");
   window.location.href = "/";
 };
