@@ -11,7 +11,7 @@ let sequenceDescription: string = "";
 let sequenceFiles: FileList | null = null;
 let sequenceInput: HTMLInputElement; // used to clear input field
 let sequenceFilePreview: string = "";
-let loading: boolean = true;
+let loading: boolean = false;
 
 /**
  * Uploads given sequence to the database. Clears input fields after upload.
