@@ -1,8 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import supabaseAdmin from "$lib/services/supabaseServerClient";
+import supabaseAdmin from "$lib/services/supabaseServerClient.server";
 import { response, responseJSON } from "$lib/utils/responses";
 import { VALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME, VALID_PASSWORD } from "$lib/utils/validation";
 
+/**
+ * POST a new user to the server.
+ */
 export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const userData = await request.json();
 	const email = userData.email as string;

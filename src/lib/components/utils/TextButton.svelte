@@ -1,3 +1,4 @@
+<!-- Reusable component for text-links. -->
 <script lang="ts">
 export let callback: () => void;
 export let content: string = "";

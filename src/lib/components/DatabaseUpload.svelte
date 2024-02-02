@@ -1,5 +1,5 @@
 <script lang="ts">
-import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT } from "$lib/utils/validation";
+import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT, VALID_DESCRIPTION, VALID_SEQUENCE_NAME } from "$lib/utils/validation";
 import type { Sequence } from "$lib/types/sequences.interface";
 
 import sequenceEntries from "$lib/stores/sequenceEntries";
@@ -11,25 +11,32 @@ let sequenceDescription: string = "";
 let sequenceFiles: FileList | null = null;
 let sequenceInput: HTMLInputElement; // used to clear input field
 let sequenceFilePreview: string = "";
+let loading: boolean = true;
 
 /**
  * Uploads given sequence to the database. Clears input fields after upload.
  */
 let uploadSequence = async () => {
+	if (loading) {
+		alert("Sequence upload in progress...");
+	}
+
   if (!sequenceFiles) {
     alert("Please select a file to upload");
     return;
   }
 
-  if (sequenceName.length === 0 || sequenceName.length > NAME_LIMIT) {
+  if (!VALID_SEQUENCE_NAME(sequenceName)) {
     alert("Name must be between 1 and " + NAME_LIMIT + " characters.");
     return;
   }
 
-  if (sequenceDescription.length > DESCRIP_LIMIT) {
+  if (!VALID_DESCRIPTION(sequenceDescription)) {
     alert("Description must be less than " + DESCRIP_LIMIT + " characters.");
     return;
   }
+
+	loading = true;
 
   const formData = new FormData();
   formData.append("name", sequenceName);
@@ -41,17 +48,22 @@ let uploadSequence = async () => {
     body: formData,
   });
 
+	loading = false;
+
   if (!uploadResponse.ok) {
     alert("Could not upload.");
     return;
   }
 
+	// Add uploaded sequence to sequenceEntries store (doesn't re-request all sequences)
 	const uploadResponseJson: Sequence = (await uploadResponse.json())[0];
 	$sequenceEntries.push({
 		id: uploadResponseJson.id,
 		sequence: uploadResponseJson,
 		oldSequence: structuredClone(uploadResponseJson),
 	})
+
+	// Need to sort since new sequence is added to the end
 	sortViewBy($currentSortField, true);
   alert("Sequence uploaded successfully");
   sequenceName = "";
@@ -69,11 +81,15 @@ $: if (sequenceFiles) {
   previewSequenceFile();
 }
 
+/**
+ * Previews the uploaded file. If the file is a text file, reads the first 100kb of the file.
+ */
 const previewSequenceFile = () => {
   if (!sequenceFiles) {
     return;
   }
 
+	// Clear preview if no file selected
   if (sequenceFiles.length === 0) {
     sequenceFilePreview = "";
     sequenceFiles = null;
@@ -153,9 +169,14 @@ const previewSequenceFile = () => {
       />
     </div>
   </div>
-  <button type="button" class="btn btn-primary mt-4" on:click={uploadSequence}>
-    Upload Sequence
-  </button>
+	<div class="d-flex align-items-center mt-4 ">
+		<button type="button" class="btn btn-primary {loading ? 'disabled' : ''}" on:click={uploadSequence}>
+			Upload Sequence
+		</button>
+		{#if loading}
+			<span class="ms-3 text-success">Uploading...</span>
+		{/if}
+	</div>
 </div>
 
 <style>

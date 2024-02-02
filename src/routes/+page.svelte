@@ -1,7 +1,5 @@
 <script lang="ts">
 import { page } from "$app/stores";
-
-
 </script>
 
 <div id="landing-page" class="mb-5">

@@ -4,9 +4,12 @@ import { browser } from "$app/environment";
 import { page } from "$app/stores";
 
 if (browser) {
+	// based on Supabase redirect URL
+	// already confirmed email
   if ($page.url.searchParams.get("error_code") === "401") {
-    window.location.href = "/login";
-  } else if ($page.url.searchParams.size !== 1 || !$page.url.searchParams.has("code")) {
+    window.location.href = "/login"
+  } // invalid URL
+	else if ($page.url.searchParams.size !== 1 || !$page.url.searchParams.has("code")) {
     window.location.href = "/signup";
   } else {
     onMount(async () => {

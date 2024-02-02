@@ -1,5 +1,6 @@
-// General utility functions
-
+/**
+ * @file Provides helper functions for creating HTTP responses.
+ */
 export const response = (status: number) => {
 	return new Response(undefined, {
 		status,

@@ -1,6 +1,7 @@
 <script lang="ts">
 import { VALID_PASSWORD, VALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME } from "$lib/utils/validation";
 
+// inputs are valid if not edited yet or if it's a valid input
 let firstName: string = "";
 let firstNameEdited: boolean = false;
 $: firstNameValid = VALID_FIRST_NAME(firstName) || !firstNameEdited;
@@ -22,7 +23,7 @@ let confirmPasswordEdited: boolean = false;
 $: confirmPasswordValid =
   (confirmPassword.length > 0 && confirmPassword === password) || !confirmPasswordEdited;
 
-let loading: boolean = false;
+let loading: boolean = false; // prevent signup spam
 let successfulSignUp: boolean = false;
 let failedMessage: string = "";
 
@@ -63,8 +64,13 @@ async function signUp() {
     loading = false;
     if (response.ok) {
       successfulSignUp = true;
-    } else {
-      failedMessage = "Failed to sign up. Please try again.";
+			failedMessage = "";
+    } else if (response.status === 429) {
+			successfulSignUp = false;
+			failedMessage = "Too many sign up attempts. Please try again later.";
+		} else {
+			successfulSignUp = false;
+      failedMessage = "Failed to sign up. Please try again later.";
     }
   } else {
     firstNameEdited = true;

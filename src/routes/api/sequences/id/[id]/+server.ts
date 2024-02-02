@@ -3,6 +3,9 @@ import { VALID_DESCRIPTION, VALID_SEQUENCE_NAME } from '$lib/utils/validation';
 import { response, responseJSON } from '$lib/utils/responses';
 import type { Sequence } from '$lib/types/sequences.interface';
 
+/**
+ * GET a sequence entry from the server by its ID.
+ */
 export async function GET({ params, locals: { supabase } }: { params: { id: string }, locals: { supabase: SupabaseClient } }) {
 	const { id } = params;
 
@@ -19,9 +22,13 @@ export async function GET({ params, locals: { supabase } }: { params: { id: stri
 	return responseJSON(200, data);
 }
 
+/**
+ * PATCH (update) a sequence entry by its ID.
+ */
 // QUESTION: allow for updating the file? if so, do validation
 export async function PATCH({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
-	const id = request.url.split("/").slice(-1)[0];
+	const urlSegments = new URL(request.url).pathname.split("/");
+	const id = urlSegments.pop() || urlSegments.pop(); // get the last segment of the URL (the ID), account for trailing slash
 	const { name, description } = await request.json();
 
 	if (!name) {
@@ -41,8 +48,12 @@ export async function PATCH({ request, locals: { supabase } }: { request: Reques
 	return response(200);
 }
 
+/**
+ * DELETE a sequence entry by its ID.
+ */
 export async function DELETE({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
-	const id = request.url.split("/").slice(-1)[0];
+	const urlSegments = new URL(request.url).pathname.split("/");
+	const id = urlSegments.pop() || urlSegments.pop(); // get the last segment of the URL (the ID), account for trailing slash
 
 	const { data, error: sequenceError }: { data: Sequence | null, error: any } = await supabase.from("sequences").select("filepath").eq("id", id).single();
 

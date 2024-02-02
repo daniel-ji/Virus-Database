@@ -5,9 +5,10 @@ export let data;
 let { supabase } = data;
 $: ({ supabase } = data);
 
+// inputs are valid if not edited yet or if it's a valid email
 let email: string = "";
 let emailEdited: boolean = false;
-$: emailValid = VALID_EMAIL(email) || !emailEdited;
+$: emailValid = VALID_EMAIL(email) || !emailEdited; 
 
 let password: string = "";
 let passwordEdited: boolean = false;
@@ -15,7 +16,7 @@ $: passwordValid = password.length > 0 || !passwordEdited;
 
 let failedLogin: boolean = false;
 let succesfulLogin: boolean = false;
-let loading: boolean = false;
+let loading: boolean = false; // prevent login spam
 
 async function login() {
   if (emailValid && emailEdited && passwordValid && passwordEdited) {

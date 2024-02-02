@@ -2,6 +2,10 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { responseJSON, responseBlob } from '$lib/utils/responses';
 import { VALID_PATH } from '$lib/utils/validation';
 
+/**
+ * GET sequence file content from the server. 
+ * If the kilobytes parameter is present, the response will be limited to that size.
+ */
 export async function GET({ url, params, locals: { supabase } }: { url: URL, params: { filepath: string }, locals: { supabase: SupabaseClient } }) {
 	const { filepath } = params;
 	const kilabytes = url.searchParams.get("kb");
@@ -30,7 +34,7 @@ export async function GET({ url, params, locals: { supabase } }: { url: URL, par
 		if (isNaN(kilabytesNum)) {
 			return responseJSON(400, { message: `Invalid kilobytes parameter` });
 		}
-		const bytes = kilabytesNum * 1024;
+		const bytes = Math.min(kilabytesNum * 1024, data.size);
 		const blob = new Blob([data.slice(0, bytes)], { type: data.type });
 		return responseBlob(200, blob);
 	} else {

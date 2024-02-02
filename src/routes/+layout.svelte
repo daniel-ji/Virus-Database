@@ -1,7 +1,6 @@
 <script>
 import { invalidate } from "$app/navigation";
 import { onMount } from "svelte";
-import { page } from "$app/stores";
 import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import "$lib/styles/global.css";
@@ -11,6 +10,7 @@ let { supabase, session } = data;
 $: ({ supabase, session } = data);
 
 onMount(() => {
+	// invalidate the session if it changes
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((event, _session) => {
@@ -36,9 +36,9 @@ const logout = async () => {
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Virus Database Web Client</a>
     <span class="navbar-text me-2">
-      {#if $page.data.session}
+      {#if session}
         <span class="me-2">
-          Hello, {$page.data.session.user.user_metadata.first_name}!
+          Hello, {session.user.user_metadata.first_name}!
         </span>
         <TextButton callback={logout} style="underline">Log Out</TextButton>
       {:else}

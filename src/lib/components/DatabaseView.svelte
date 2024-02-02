@@ -9,17 +9,6 @@ import sequenceEntries from "$lib/stores/sequenceEntries";
 import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
 import { IS_TEXT_FILE_NAME } from "$lib/utils/validation";
 
-// import {
-//   PencilSquare,
-//   XSquare,
-//   CheckSquare,
-//   CloudDownload,
-//   Trash,
-//   ArrowDownUp,
-//   ArrowUp,
-//   ArrowDown,
-// } from "svelte-bootstrap-icons";
-
 import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
 import X from "svelte-bootstrap-icons/lib/X.svelte";
 import XSquare from "svelte-bootstrap-icons/lib/XSquare.svelte";
@@ -41,12 +30,12 @@ import {
   fetchSequence,
 } from "$lib/utils/sequence.client";
 
-const DATABASE_VIEW_FIELDS = [
-  { field: "name", viewName: "Sequence Name" },
-  { field: "description", viewName: "Sequence Description" },
-  { field: "filename", viewName: "Sequence File" },
-  { field: "created_at", viewName: "Upload Date" },
-  { field: "updated_at", viewName: "Last Modified" },
+const DATABASE_VIEW_COLUMNS = [
+  { field: "name", columnName: "Sequence Name" },
+  { field: "description", columnName: "Sequence Description" },
+  { field: "filename", columnName: "Sequence File" },
+  { field: "created_at", columnName: "Upload Date" },
+  { field: "updated_at", columnName: "Last Modified" },
 ];
 
 if (browser) {
@@ -58,6 +47,9 @@ if (browser) {
 
 let previewText: string = "";
 
+/**
+ * Preview the sequence file. Runs when the user clicks the filename of a sequence (a text link).
+ */
 // TODO: Store previewed sequences in some cache or IndexedDB
 // TODO: Allow loading of more than just the first 10KB of a file
 const previewSequence = async (sequenceId: string) => {
@@ -67,14 +59,16 @@ const previewSequence = async (sequenceId: string) => {
     return;
   }
 
+	// QUESTION: Should we do this?
+	// If the file has already been previewed, don't re-fetch it
   if ($sequenceEntries[index].sequence.file_preview) {
-    previewText = $sequenceEntries[index].sequence.file_preview ?? "";
+    previewText = $sequenceEntries[index].sequence.file_preview!;
   } else {
     const filepath = $sequenceEntries[index].sequence.filepath;
     const sequenceFile = await fetchSequence(filepath, 100);
     previewText = await (await sequenceFile.blob()).text();
     $sequenceEntries[index].sequence.file_preview = previewText;
-    $sequenceEntries = $sequenceEntries;
+    $sequenceEntries = $sequenceEntries; // force reactivity
   }
 
   window.addEventListener("keydown", escClosePreview);
@@ -87,6 +81,7 @@ const closePreview = () => {
   window.removeEventListener("keydown", escClosePreview);
 };
 
+// Close the preview modal when the user presses the escape key
 const escClosePreview = (event: any) => {
   if (event.key === "Escape") {
     closePreview();
@@ -99,10 +94,10 @@ const escClosePreview = (event: any) => {
   <table class="table table-bordered w-100">
     <thead>
       <tr>
-        {#each DATABASE_VIEW_FIELDS as field}
+        {#each DATABASE_VIEW_COLUMNS as field}
           <th>
             <div class="d-flex flex-row justify-content-between align-items-center">
-              <span>{field.viewName}</span>
+              <span>{field.columnName}</span>
               <TextButton
                 callback={() => sortViewBy(field.field)}
                 style="p-1 {$currentSortField === field.field ? 'text-primary' : 'text-secondary'}"

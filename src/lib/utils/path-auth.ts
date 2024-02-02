@@ -1,3 +1,6 @@
+/**
+ * @file Used in hooks.server.ts for auth guard.
+ */
 export const AUTHORIZED_API_PATHS: string[] = [
 	'/api/sequences',
 ];

@@ -3,6 +3,9 @@ import { FILE_SIZE_LIMIT, VALID_SEQUENCE_NAME, VALID_DESCRIPTION } from "$lib/ut
 import { responseJSON } from "$lib/utils/responses";
 import type { Sequence } from "$lib/types/sequences.interface";
 
+/**
+ * GET all sequences from the server.
+ */
 export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { supabase: SupabaseClient } }) => {
 	const { data, error }: { data: Sequence[] | null, error: any } = await supabase.from("sequences").select("*");
 
@@ -17,6 +20,9 @@ export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { s
 	return responseJSON(200, data);
 }
 
+/**
+ * POST a new sequence to the server.
+ */
 // TODO: upload to user folder
 export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
 	const formData = Object.fromEntries(await request.formData());

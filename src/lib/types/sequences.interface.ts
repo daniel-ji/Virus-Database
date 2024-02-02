@@ -10,6 +10,7 @@ export interface Sequence {
 	file_preview?: string;
 }
 
+// For when sequences are being edited by the dashboard.
 export interface SequenceState {
 	id: string;
 	sequence: Sequence;

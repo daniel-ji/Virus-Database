@@ -3,7 +3,8 @@ import editedSequence from "$lib/stores/editedSequence";
 import { saveEdits, cancelEdits } from "$lib/utils/sequence.client";
 </script>
 
-<!-- QUESTION: Allow editing of files? If so, add remove delete multiple files. Should we store previous versions of a database entry? -->
+<!-- QUESTION: Allow editing of files? If so, add remove delete multiple files. Should we store previous versions of a 
+	database entry? -->
 {#if $editedSequence}
   <div id="database-edit" class="mb-4">
     <h2 class="mb-3">Edit Sequence</h2>
