@@ -1,7 +1,4 @@
 <div id="no-auth" class="w-100 text-center">
-  <h2>Not Authorized.</h2>
-  <p>
-    Please <a href="/login">log in</a> to access this page. If you believe this is an error, please contact
-    the administrator.
-  </p>
+  <h2>Not Authenticated/Authorized.</h2>
+  <p>If you believe this is an error, please contact the administrator.</p>
 </div>

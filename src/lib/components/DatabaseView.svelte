@@ -1,12 +1,13 @@
 <script lang="ts">
 import { onMount } from "svelte";
+import { get } from "svelte/store";
 import { browser } from "$app/environment";
 
 import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
-import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
+import { currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
 import { IS_TEXT_FILE_NAME } from "$lib/utils/validation";
 
 import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
@@ -26,9 +27,10 @@ import {
   saveEdits,
   getSequences,
   deleteSequence,
-  sortViewBy,
   fetchSequence,
 } from "$lib/utils/sequence.client";
+
+import { sortViewBy } from "$lib/utils/table.client";
 
 const DATABASE_VIEW_COLUMNS = [
   { field: "name", columnName: "Sequence Name" },
@@ -41,7 +43,7 @@ const DATABASE_VIEW_COLUMNS = [
 if (browser) {
   onMount(async () => {
     await getSequences();
-    sortViewBy($currentSortField, true);
+    sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), true);
   });
 }
 
@@ -59,8 +61,8 @@ const previewSequence = async (sequenceId: string) => {
     return;
   }
 
-	// QUESTION: Should we do this?
-	// If the file has already been previewed, don't re-fetch it
+  // QUESTION: Should we do this?
+  // If the file has already been previewed, don't re-fetch it
   if ($sequenceEntries[index].sequence.file_preview) {
     previewText = $sequenceEntries[index].sequence.file_preview!;
   } else {
@@ -99,11 +101,11 @@ const escClosePreview = (event: any) => {
             <div class="d-flex flex-row justify-content-between align-items-center">
               <span>{field.columnName}</span>
               <TextButton
-                callback={() => sortViewBy(field.field)}
-                style="p-1 {$currentSortField === field.field ? 'text-primary' : 'text-secondary'}"
+                callback={() => sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, field.field)}
+                style="p-1 {$currentSequencesSortField === field.field ? 'text-primary' : 'text-secondary'}"
               >
-                {#if $currentSortField === field.field}
-                  {#if $currentSortOrder === 1}
+                {#if $currentSequencesSortField === field.field}
+                  {#if $currentSequencesSortOrder === 1}
                     <ArrowUp />
                   {:else}
                     <ArrowDown />

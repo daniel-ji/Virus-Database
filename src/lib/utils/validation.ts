@@ -32,7 +32,7 @@ export const VALID_EMAIL = (email: string) => {
 
 export const VALID_PASSWORD = (password: string) => {
 	// 12-50 characters, 1 uppercase, 1 lowercase, 1 number
-	return password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{12,50}$/);
+	return password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=[\]{};':"\\|,.<>/? ]{12,50}$/);
 }
 
 export const VALID_PATH = (path: string) => {
@@ -48,4 +48,11 @@ export const VALID_SEQUENCE_NAME = (name: string) => {
 
 export const VALID_DESCRIPTION = (description: string) => {
 	return description.length <= DESCRIP_LIMIT;
+}
+
+export const VALID_POSITIVE_INT = (num: any) => {
+	if (typeof num !== "number" && typeof num !== "string") return false;
+	if (typeof num === "string") num = parseInt(num);
+	if (isNaN(num)) return false;
+	return num > 0 && Number.isInteger(num);
 }

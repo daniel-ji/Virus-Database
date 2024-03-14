@@ -3,8 +3,9 @@ import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT, VALID_DESCRIP
 import type { Sequence } from "$lib/types/sequences.interface";
 
 import sequenceEntries from "$lib/stores/sequenceEntries";
-import { currentSortField } from "$lib/stores/sortView";
-import { sortViewBy } from "$lib/utils/sequence.client";
+import { currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
+import { sortViewBy } from "$lib/utils/table.client";
+import { get } from "svelte/store";
 
 let sequenceName: string = "";
 let sequenceDescription: string = "";
@@ -64,7 +65,7 @@ let uploadSequence = async () => {
 	})
 
 	// Need to sort since new sequence is added to the end
-	sortViewBy($currentSortField, true);
+	sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), true);
   alert("Sequence uploaded successfully");
   sequenceName = "";
   sequenceDescription = "";

@@ -14,8 +14,9 @@ onMount(() => {
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((event, _session) => {
-    if (_session?.expires_at !== session?.expires_at) {
+		if (_session?.expires_at !== session?.expires_at) {
       invalidate("supabase:auth");
+			window.location.href = "/";
     }
   });
 
@@ -34,7 +35,7 @@ const logout = async () => {
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Virus Database Web Client</a>
+    <a class="navbar-brand" href="/">Virus Database Web Client</a>
     <span class="navbar-text me-2">
       {#if session}
         <span class="me-2">

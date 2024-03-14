@@ -24,7 +24,7 @@ export const GET = async ({ url, locals: { supabase } }: { url: URL, locals: { s
  * POST a new sequence to the server.
  */
 // TODO: upload to user folder
-export async function POST({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) {
+export const POST = async ({ request, locals: { supabase } }: { request: Request, locals: { supabase: SupabaseClient } }) => {
 	const formData = Object.fromEntries(await request.formData());
 	const name = formData.name as string;
 	const description = formData.description as string;

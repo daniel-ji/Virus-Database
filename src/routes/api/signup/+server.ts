@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import supabaseAdmin from "$lib/services/supabaseServerClient.server";
 import { response, responseJSON } from "$lib/utils/responses";
 import { VALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME, VALID_PASSWORD } from "$lib/utils/validation";
+import { Role } from "$lib/utils/auth";
 
 /**
  * POST a new user to the server.
@@ -25,7 +26,8 @@ export async function POST({ request, locals: { supabase } }: { request: Request
 		email, password, options: {
 			data: {
 				first_name: firstName,
-				last_name: lastName
+				last_name: lastName,
+				role: Role.ADMIN
 			}
 		}
 	});

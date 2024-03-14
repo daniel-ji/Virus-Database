@@ -6,19 +6,19 @@ import FileSaver from "file-saver";
 
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
-import { currentSortField, currentSortOrder } from "$lib/stores/sortView";
+import { currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
 import type { Sequence, SequenceState } from "$lib/types/sequences.interface";
 
 import { VALID_SEQUENCE_NAME, VALID_DESCRIPTION, NAME_LIMIT, DESCRIP_LIMIT } from "$lib/utils/validation";
 
 // Can't use SvelteKit stores in non-SvelteKit files, so use regular variables and subscribe to the stores.
-let $currentSortField: string = "name";
-let $currentSortOrder: number = 1;
-currentSortField.subscribe((value) => {
-	$currentSortField = value;
+let $currentSequencesSortField: string = "name";
+let $currentSequencesSortOrder: number = 1;
+currentSequencesSortField.subscribe((value) => {
+	$currentSequencesSortField = value;
 });
-currentSortOrder.subscribe((value) => {
-	$currentSortOrder = value;
+currentSequencesSortOrder.subscribe((value) => {
+	$currentSequencesSortOrder = value;
 });
 
 let $sequenceEntries: SequenceState[] = [];
@@ -46,33 +46,6 @@ export const getSequences = async () => {
 		oldSequence: structuredClone(sequence),
 	})));
 }
-
-/**
- * For sorting $sequenceEntries by a field.
- * 
- * @param field - The field to sort by
- * @param forceSortDesc - If true, force the sort order to be descending
- */
-export const sortViewBy = (field: string, forceSortDesc: boolean = false) => {
-	if (field === $currentSortField && !forceSortDesc) {
-		currentSortOrder.set($currentSortOrder * -1);
-	} else {
-		currentSortField.set(field);
-		currentSortOrder.set(1);
-	}
-
-	$sequenceEntries.sort((a, b) => {
-		if (a.sequence[field] < b.sequence[field]) {
-			return $currentSortOrder * -1;
-		}
-		if (a.sequence[field] > b.sequence[field]) {
-			return $currentSortOrder;
-		}
-		return 0;
-	});
-
-	sequenceEntries.set($sequenceEntries);
-};
 
 /**
  * Get sequence file content. 
