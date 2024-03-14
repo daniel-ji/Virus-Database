@@ -5,6 +5,7 @@ import DatabaseView from "$lib/components/DatabaseView.svelte";
 </script>
 
 <div id="dashboard" class="mb-5">
+	<h2 class="mb-3 w-100 text-center">Sequence Database</h2>
   <DatabaseView />
   <DatabaseEdit />
   <DatabaseUpload />

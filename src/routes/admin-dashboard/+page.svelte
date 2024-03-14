@@ -3,7 +3,7 @@ import { onMount } from "svelte";
 import { browser } from "$app/environment";
 
 import { sortViewBy } from "$lib/utils/table.client";
-import { currentUsersSortField, currentUsersSortOrder } from "$lib/stores/sortView";
+import { USER_SORT_SUBFIELD, currentUsersSortField, currentUsersSortOrder } from "$lib/stores/sortView";
 
 import { getUsers, deleteUser } from "$lib/utils/manage-users.client";
 import userEntries from "$lib/stores/userEntries";
@@ -32,7 +32,8 @@ if (browser) {
 </script>
 
 <div id="admin-dashboard">
-  <h2 class="mb-3">Admin Dashboard</h2>
+  <h2 class="mb-3 w-100 text-center">Admin Dashboard</h2>
+	<h3 class="mb-3">Manage Users</h3>
   <table class="table table-bordered w-100">
     <thead>
       <tr>
@@ -41,7 +42,7 @@ if (browser) {
             <div class="d-flex flex-row justify-content-between align-items-center">
               <span>{field.columnName}</span>
               <TextButton
-                callback={() => sortViewBy(currentUsersSortField, currentUsersSortOrder, userEntries, field.field)}
+                callback={() => sortViewBy(currentUsersSortField, currentUsersSortOrder, userEntries, USER_SORT_SUBFIELD, field.field)}
                 style="p-1 {$currentUsersSortField === field.field ? 'text-primary' : 'text-secondary'}"
               >
                 {#if $currentUsersSortField === field.field}
@@ -87,5 +88,9 @@ if (browser) {
   align-items: flex-start;
   margin-left: 2.5%;
   width: 95%;
+}
+
+#admin-dashboard th {
+  user-select: none;
 }
 </style>

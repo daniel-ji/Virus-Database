@@ -3,7 +3,7 @@ import { DESCRIP_LIMIT, FILE_SIZE_LIMIT, IS_TEXT_FILE, NAME_LIMIT, VALID_DESCRIP
 import type { Sequence } from "$lib/types/sequences.interface";
 
 import sequenceEntries from "$lib/stores/sequenceEntries";
-import { currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
+import { SEQUNECE_SORT_SUBFIELD, currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
 import { sortViewBy } from "$lib/utils/table.client";
 import { get } from "svelte/store";
 
@@ -65,7 +65,7 @@ let uploadSequence = async () => {
 	})
 
 	// Need to sort since new sequence is added to the end
-	sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), true);
+	sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), SEQUNECE_SORT_SUBFIELD, true);
   alert("Sequence uploaded successfully");
   sequenceName = "";
   sequenceDescription = "";
@@ -137,7 +137,7 @@ const previewSequenceFile = () => {
 </script>
 
 <div id="database-upload" class="d-flex flex-column align-items-start">
-  <h2 class="mb-3">Database Upload</h2>
+  <h3 class="mb-3">Database Upload</h3>
   <div id="database-upload-form" class="d-flex flex-row justify-content-between w-100">
     <div id="database-upload-left" class="pe-4">
       <input

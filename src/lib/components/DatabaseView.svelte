@@ -7,7 +7,7 @@ import TextButton from "$lib/components/utils/TextButton.svelte";
 
 import editedSequence from "$lib/stores/editedSequence";
 import sequenceEntries from "$lib/stores/sequenceEntries";
-import { currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
+import { SEQUNECE_SORT_SUBFIELD, currentSequencesSortField, currentSequencesSortOrder } from "$lib/stores/sortView";
 import { IS_TEXT_FILE_NAME } from "$lib/utils/validation";
 
 import PencilSquare from "svelte-bootstrap-icons/lib/PencilSquare.svelte";
@@ -43,7 +43,7 @@ const DATABASE_VIEW_COLUMNS = [
 if (browser) {
   onMount(async () => {
     await getSequences();
-    sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), true);
+    sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, get(currentSequencesSortField), SEQUNECE_SORT_SUBFIELD, true);
   });
 }
 
@@ -92,7 +92,7 @@ const escClosePreview = (event: any) => {
 </script>
 
 <div id="database-view" class="d-flex align-items-start flex-column mb-4">
-  <h2 class="mb-3">Database View</h2>
+	<h3 class="mb-3">Database View</h3>
   <table class="table table-bordered w-100">
     <thead>
       <tr>
@@ -101,7 +101,7 @@ const escClosePreview = (event: any) => {
             <div class="d-flex flex-row justify-content-between align-items-center">
               <span>{field.columnName}</span>
               <TextButton
-                callback={() => sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, field.field)}
+                callback={() => sortViewBy(currentSequencesSortField, currentSequencesSortOrder, sequenceEntries, SEQUNECE_SORT_SUBFIELD, field.field)}
                 style="p-1 {$currentSequencesSortField === field.field ? 'text-primary' : 'text-secondary'}"
               >
                 {#if $currentSequencesSortField === field.field}
