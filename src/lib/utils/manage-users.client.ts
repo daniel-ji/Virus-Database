@@ -14,7 +14,7 @@ export const getUsers = async () => {
 	if (!usersResponse.ok) {
 		return;
 	}
-	const users = await usersResponse.json();
+	const users = await usersResponse.json()
 
 	userEntries.set(users);
 }
@@ -33,7 +33,7 @@ export const deleteUser = async (id: string, name: string) => {
 		method: "DELETE",
 	});
 	if (!response.ok) {
-		alert("Failed to delete user");
+		alert((await response.json())?.message ?? "Failed to delete user");
 		return;
 	}
 
